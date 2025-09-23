@@ -1,0 +1,32 @@
+{
+    "video_path": "heygen_working_research_output/generated_videos/heygen_1758591159.mp4",
+    "characteristics": {
+        "video_path": "heygen_working_research_output/generated_videos/heygen_1758591159.mp4",
+        "fps": 25.0,
+        "frame_count": 427,
+        "width": 1280,
+        "height": 720,
+        "duration": 17.08,
+        "brightness_mean": 102.74264717487375,
+        "brightness_std": 0.24375344816433708,
+        "contrast_mean": 29.776444405211763,
+        "contrast_std": 0.3015998046330267,
+        "edges_mean": 2716515.0,
+        "edges_std": 76833.32382501749,
+        "frames_analyzed": 11
+    },
+    "detection": {
+        "is_fake": true,
+        "confidence": 0.4941911846618833,
+        "detection_algorithm": "simulated_heuristic",
+        "analysis_time": 2.94166911063538,
+        "frames_analyzed": 11,
+        "result": "Fake video detected",
+        "characteristics_used": {
+            "brightness_std": 0.24375344816433708,
+            "contrast_std": 0.3015998046330267,
+            "edges_mean": 2716515.0
+        }
+    },
+    "timestamp": 1758591928.5149472
+}

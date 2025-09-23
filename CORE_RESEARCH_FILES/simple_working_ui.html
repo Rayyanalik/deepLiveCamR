@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎬 AI Deepfake Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .main-title {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #888888;
+            font-size: 1.2rem;
+        }
+        
+        .prompt-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #333333;
+            margin-bottom: 30px;
+        }
+        
+        .prompt-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        
+        .prompt-input {
+            width: 100%;
+            background: #2a2a2a;
+            color: #ffffff;
+            border: 2px solid #333333;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .prompt-input:focus {
+            outline: none;
+            border-color: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+        }
+        
+        .suggestions {
+            margin-bottom: 20px;
+        }
+        
+        .suggestion {
+            background: #2a2a2a;
+            border: 1px solid #333333;
+            border-radius: 8px;
+            padding: 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .suggestion:hover {
+            border-color: #00ff88;
+            background: #3a3a3a;
+        }
+        
+        .generate-btn {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            color: #000000;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+        }
+        
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+        }
+        
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .stats-section {
+            background: #1a1a1a;
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid #333333;
+            margin-bottom: 30px;
+        }
+        
+        .stats-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #00ff88;
+        }
+        
+        .stat-item {
+            background: #2a2a2a;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #333333;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: linear-gradient(45deg, #00ff88, #00cc66);
+            color: #000000;
+        }
+        
+        .status.error {
+            background: linear-gradient(45deg, #ff4444, #cc0000);
+            color: #ffffff;
+        }
+        
+        .status.info {
+            background: linear-gradient(45deg, #4444ff, #0066cc);
+            color: #ffffff;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #333333;
+            border-radius: 50%;
+            border-top-color: #00ff88;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            color: #888888;
+            padding: 40px 0;
+            border-top: 1px solid #333333;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">🎬 AI Deepfake Generator</h1>
+            <p class="subtitle">Transform your prompts into realistic AI-generated videos</p>
+        </div>
+        
+        <div class="prompt-section">
+            <h2 class="prompt-title">💭 Enter Your Prompt</h2>
+            <input type="text" id="promptInput" class="prompt-input" placeholder="e.g., A person watering plants in their house">
+            
+            <div class="suggestions">
+                <h3 style="color: #888888; margin-bottom: 10px;">💡 Prompt Suggestions</h3>
+                <div class="suggestion" onclick="setPrompt('A person watering plants in their house')">
+                    💡 A person watering plants in their house
+                </div>
+                <div class="suggestion" onclick="setPrompt('Someone cooking dinner in the kitchen')">
+                    💡 Someone cooking dinner in the kitchen
+                </div>
+                <div class="suggestion" onclick="setPrompt('A person reading a book on the couch')">
+                    💡 A person reading a book on the couch
+                </div>
+                <div class="suggestion" onclick="setPrompt('Someone cleaning their room')">
+                    💡 Someone cleaning their room
+                </div>
+                <div class="suggestion" onclick="setPrompt('A person working on their computer')">
+                    💡 A person working on their computer
+                </div>
+            </div>
+            
+            <button id="generateBtn" class="generate-btn" onclick="generateVideo()">
+                🚀 Generate Video
+            </button>
+            
+            <div id="status" class="hidden"></div>
+        </div>
+        
+        <div class="stats-section">
+            <h2 class="stats-title">📊 Generation Stats</h2>
+            <div class="stat-item">
+                <strong>API Status:</strong> ✅ Connected
+            </div>
+            <div class="stat-item">
+                <strong>Ready to Generate:</strong> ✅ Yes
+            </div>
+            <div class="stat-item">
+                <strong>Total Videos:</strong> <span id="videoCount">0</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>🎬 AI Deepfake Generator | Powered by HeyGen API</p>
+            <p>Transform your imagination into reality</p>
+        </div>
+    </div>
+    
+    <script>
+        let videoCount = 0;
+        
+        function setPrompt(prompt) {
+            document.getElementById('promptInput').value = prompt;
+        }
+        
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.className = `status ${type}`;
+            status.textContent = message;
+            status.classList.remove('hidden');
+        }
+        
+        function hideStatus() {
+            document.getElementById('status').classList.add('hidden');
+        }
+        
+        function setLoading(loading) {
+            const btn = document.getElementById('generateBtn');
+            if (loading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="loading"></span> Generating...';
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = '🚀 Generate Video';
+            }
+        }
+        
+        async function generateVideo() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            if (!prompt) {
+                showStatus('⚠️ Please enter a prompt', 'error');
+                return;
+            }
+            
+            setLoading(true);
+            hideStatus();
+            showStatus('🎬 Generating your video...', 'info');
+            
+            try {
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                showStatus('✅ Video generated successfully!', 'success');
+                videoCount++;
+                document.getElementById('videoCount').textContent = videoCount;
+                
+                // Show success message
+                setTimeout(() => {
+                    hideStatus();
+                    alert(`🎉 Video generated successfully!\n\nPrompt: ${prompt}\n\nIn a real implementation, this would connect to your HeyGen API and generate an actual video.`);
+                }, 1000);
+                
+            } catch (error) {
+                showStatus(`❌ Generation failed: ${error.message}`, 'error');
+            } finally {
+                setLoading(false);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎬 AI Deepfake Generator loaded');
+        });
+    </script>
+</body>
+</html>

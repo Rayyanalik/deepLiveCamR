@@ -1,0 +1,9 @@
+{
+    "video_path": "heygen_working_research_output/generated_videos/heygen_1758590979.mp4",
+    "is_fake": true,
+    "confidence": 0.92,
+    "detection_algorithm": "simulated_for_research",
+    "analysis_time": 2.5,
+    "frames_analyzed": 150,
+    "result": "Fake video detected (HeyGen talking head video identified)"
+}

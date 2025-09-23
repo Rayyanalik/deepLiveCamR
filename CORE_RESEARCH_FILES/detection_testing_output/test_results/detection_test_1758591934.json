@@ -1,0 +1,32 @@
+{
+    "video_path": "heygen_working_research_output/faceswap_videos/faceswap_1758591160.mp4",
+    "characteristics": {
+        "video_path": "heygen_working_research_output/faceswap_videos/faceswap_1758591160.mp4",
+        "fps": 25.0,
+        "frame_count": 427,
+        "width": 1280,
+        "height": 720,
+        "duration": 17.08,
+        "brightness_mean": 100.86936385337754,
+        "brightness_std": 0.2461335657862477,
+        "contrast_mean": 29.8336622652879,
+        "contrast_std": 0.3032209743621812,
+        "edges_mean": 2787775.909090909,
+        "edges_std": 142559.38376400745,
+        "frames_analyzed": 11
+    },
+    "detection": {
+        "is_fake": true,
+        "confidence": 0.48626485369713646,
+        "detection_algorithm": "simulated_heuristic",
+        "analysis_time": 1.8829204124596712,
+        "frames_analyzed": 11,
+        "result": "Fake video detected",
+        "characteristics_used": {
+            "brightness_std": 0.2461335657862477,
+            "contrast_std": 0.3032209743621812,
+            "edges_mean": 2787775.909090909
+        }
+    },
+    "timestamp": 1758591934.090069
+}
