@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIA-X: Interpretable Latent Portrait Animator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a0a0a0;
+            margin-bottom: 15px;
+        }
+
+        .links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .link {
+            color: #8b5cf6;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .link:hover {
+            color: #a78bfa;
+        }
+
+        .instruction {
+            background: #1a1a2e;
+            border: 1px solid #2d2d44;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .instruction-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .instruction-title {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .dropdown-arrow {
+            color: #8b5cf6;
+            font-size: 1.2rem;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #2d2d44;
+        }
+
+        .nav-tab {
+            padding: 15px 30px;
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            font-size: 1rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: #ffffff;
+            border-bottom-color: #8b5cf6;
+        }
+
+        .nav-tab:hover {
+            color: #ffffff;
+        }
+
+        /* Main Grid */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* Panel Styles */
+        .panel {
+            background: #1a1a2e;
+            border: 1px solid #2d2d44;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 300px;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            color: #ffffff;
+            font-size: 1.1rem;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dropdown-arrow, .close-btn {
+            color: #8b5cf6;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .close-btn {
+            color: #ef4444;
+        }
+
+        /* Source Image Panel */
+        .source-panel {
+            grid-column: 1;
+        }
+
+        .upload-area {
+            border: 2px dashed #4a4a6a;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .upload-area:hover {
+            border-color: #8b5cf6;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: #8b5cf6;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #a0a0a0;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-btn:hover {
+            background: #7c3aed;
+        }
+
+        .action-btn.secondary {
+            background: #374151;
+        }
+
+        .action-btn.secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Examples Section */
+        .examples {
+            margin-top: 20px;
+        }
+
+        .examples-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .examples-title {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .example-img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .example-img:hover {
+            transform: scale(1.05);
+        }
+
+        /* Output Panels */
+        .output-panel {
+            position: relative;
+        }
+
+        .output-area {
+            border: 2px dashed #4a4a6a;
+            border-radius: 8px;
+            padding: 40px 20px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .error-badge {
+            background: #ef4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .success-badge {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            grid-column: 2 / 4;
+            margin-top: 20px;
+        }
+
+        .control-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #2d2d44;
+        }
+
+        .control-tab {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            color: #a0a0a0;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .control-tab.active {
+            color: #ffffff;
+            border-bottom-color: #8b5cf6;
+        }
+
+        .control-tab:hover {
+            color: #ffffff;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-label {
+            min-width: 60px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        .slider-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            background: #374151;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #8b5cf6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        .slider::-webkit-slider-track {
+            background: #8b5cf6;
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .value-input {
+            width: 60px;
+            padding: 5px 8px;
+            background: #374151;
+            border: 1px solid #4a4a6a;
+            border-radius: 4px;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .reset-btn {
+            background: none;
+            border: none;
+            color: #8b5cf6;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .reset-btn:hover {
+            color: #a78bfa;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+        }
+
+        .btn-secondary {
+            background: #374151;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .control-panel {
+                grid-column: 1 / 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .control-panel {
+                grid-column: 1;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hidden file inputs */
+        .file-input {
+            display: none;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .spinner {
+            border: 2px solid #4a4a6a;
+            border-top: 2px solid #8b5cf6;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="title">LIA-X: Interpretable Latent Portrait Animator</h1>
+            <p class="subtitle">Toward Interactive Portrait Animation and Editing</p>
+            <div class="links">
+                <a href="#" class="link">[Technical Report]</a>
+                <span>|</span>
+                <a href="#" class="link">[Project Page]</a>
+                <span>|</span>
+                <a href="#" class="link">[Code]</a>
+            </div>
+        </div>
+
+        <!-- Instruction -->
+        <div class="instruction">
+            <div class="instruction-header">
+                <span class="instruction-title">Instruction</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('animation')">Image Animation</button>
+            <button class="nav-tab" onclick="switchTab('editing')">Image Editing</button>
+            <button class="nav-tab" onclick="switchTab('video')">Video Editing</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-grid">
+            <!-- Source Image Panel -->
+            <div class="panel source-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Source Image</span>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+                
+                <div class="upload-area" onclick="document.getElementById('source-image').click()">
+                    <div class="upload-icon">📷</div>
+                    <div class="upload-text">Drop Image Here - or - Click to Upload</div>
+                    <div class="upload-actions">
+                        <button class="action-btn">
+                            <span>📤</span> Upload
+                        </button>
+                        <button class="action-btn secondary">
+                            <span>👁️</span> View
+                        </button>
+                        <button class="action-btn secondary">
+                            <span>⊞</span> Gallery
+                        </button>
+                    </div>
+                </div>
+
+                <input type="file" id="source-image" class="file-input" accept="image/*" onchange="handleSourceImage(this)">
+                <input type="file" id="source-video" class="file-input" accept="video/*" onchange="handleSourceVideo(this)">
+
+                <div class="examples">
+                    <div class="examples-header">
+                        <span class="examples-title">Examples</span>
+                        <span>☰</span>
+                    </div>
+                    <div class="examples-grid">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hY3JvbjwvdGV4dD48L3N2Zz4=" alt="Macron" class="example-img" onclick="loadExample('macron')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVpbnN0ZWluPC90ZXh0Pjwvc3ZnPg==" alt="Einstein" class="example-img" onclick="loadExample('einstein')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlN3aWZ0PC90ZXh0Pjwvc3ZnPg==" alt="Swift" class="example-img" onclick="loadExample('swift')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBlcnNvbjwvdGV4dD48L3N2Zz4=" alt="Person" class="example-img" onclick="loadExample('person1')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFzaWFuPC90ZXh0Pjwvc3ZnPg==" alt="Asian" class="example-img" onclick="loadExample('asian')">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPldvbWFuPC90ZXh0Pjwvc3ZnPg==" alt="Woman" class="example-img" onclick="loadExample('woman')">
+                    </div>
+                </div>
+
+                <button class="action-btn" style="width: 100%; margin-top: 15px;">Edit</button>
+            </div>
+
+            <!-- Driving Video Panel -->
+            <div class="panel">
+                <div class="panel-header">
+                    <span class="panel-title">Driving Video</span>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+                <div class="upload-area" onclick="document.getElementById('driving-video').click()">
+                    <div class="upload-icon">🎥</div>
+                    <div class="upload-text">Drop Video Here - or - Click to Upload</div>
+                </div>
+                <input type="file" id="driving-video" class="file-input" accept="video/*" onchange="handleDrivingVideo(this)">
+            </div>
+
+            <!-- Edited Source Image Panel -->
+            <div class="panel output-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Edited Source Image</span>
+                    <div class="panel-actions">
+                        <span class="dropdown-arrow">▼</span>
+                        <span class="close-btn">✕</span>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <div class="error-badge">Error</div>
+                </div>
+            </div>
+
+            <!-- Animated Video Panel -->
+            <div class="panel output-panel">
+                <div class="panel-header">
+                    <span class="panel-title">Animated Video</span>
+                    <div class="panel-actions">
+                        <span class="dropdown-arrow">▼</span>
+                        <span class="close-btn">✕</span>
+                    </div>
+                </div>
+                <div class="output-area">
+                    <div class="error-badge">Error</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="panel control-panel">
+            <div class="panel-header">
+                <span class="panel-title">Control Panel</span>
+                <span class="dropdown-arrow">▼</span>
+            </div>
+            
+            <div class="control-tabs">
+                <button class="control-tab active" onclick="switchControlTab('head')">Head</button>
+                <button class="control-tab" onclick="switchControlTab('mouth')">Mouth</button>
+                <button class="control-tab" onclick="switchControlTab('eyes')">Eyes</button>
+            </div>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-item">
+                        <span class="control-label">yaw1</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('yaw1', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('yaw1', this.value)">
+                        <button class="reset-btn" onclick="resetControl('yaw1')">↺</button>
+                    </div>
+
+                    <div class="control-item">
+                        <span class="control-label">yaw2</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('yaw2', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('yaw2', this.value)">
+                        <button class="reset-btn" onclick="resetControl('yaw2')">↺</button>
+                    </div>
+
+                    <div class="control-item">
+                        <span class="control-label">pitch</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('pitch', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('pitch', this.value)">
+                        <button class="reset-btn" onclick="resetControl('pitch')">↺</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-item">
+                        <span class="control-label">roll1</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('roll1', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('roll1', this.value)">
+                        <button class="reset-btn" onclick="resetControl('roll1')">↺</button>
+                    </div>
+
+                    <div class="control-item">
+                        <span class="control-label">roll2</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('roll2', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('roll2', this.value)">
+                        <button class="reset-btn" onclick="resetControl('roll2')">↺</button>
+                    </div>
+
+                    <div class="control-item">
+                        <span class="control-label">neck</span>
+                        <div class="slider-container">
+                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('neck', this.value)">
+                        </div>
+                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('neck', this.value)">
+                        <button class="reset-btn" onclick="resetControl('neck')">↺</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
+            <button class="btn btn-primary" onclick="animate()">Animate</button>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentTab = 'animation';
+        let currentControlTab = 'head';
+        let controls = {
+            yaw1: 0, yaw2: 0, pitch: 0,
+            roll1: 0, roll2: 0, neck: 0
+        };
+
+        // Tab switching
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update UI based on tab
+            if (tab === 'animation') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Source Image';
+                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '📷';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Image Here - or - Click to Upload';
+            } else if (tab === 'editing') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Source Image';
+                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '📷';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Image Here - or - Click to Upload';
+            } else if (tab === 'video') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Source Video';
+                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '🎥';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Video Here - or - Click to Upload';
+            }
+        }
+
+        // Control tab switching
+        function switchControlTab(tab) {
+            currentControlTab = tab;
+            document.querySelectorAll('.control-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // File handling
+        async function handleSourceImage(input) {
+            if (input.files && input.files[0]) {
+                const formData = new FormData();
+                formData.append('file', input.files[0]);
+                
+                try {
+                    const response = await fetch('/api/upload/source', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        const uploadArea = document.querySelector('.source-panel .upload-area');
+                        uploadArea.innerHTML = `
+                            <img src="${URL.createObjectURL(input.files[0])}" style="max-width: 100%; max-height: 200px; border-radius: 8px;">
+                            <div style="margin-top: 10px; color: #10b981;">✅ ${result.message}</div>
+                        `;
+                    } else {
+                        throw new Error(result.error);
+                    }
+                } catch (error) {
+                    console.error('Upload error:', error);
+                    alert('Upload failed: ' + error.message);
+                }
+            }
+        }
+
+        function handleSourceVideo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uploadArea = document.querySelector('.source-panel .upload-area');
+                    uploadArea.innerHTML = `
+                        <video src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;" controls></video>
+                        <div style="margin-top: 10px; color: #10b981;">✅ Video loaded successfully</div>
+                    `;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function handleDrivingVideo(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const uploadArea = document.querySelector('.panel:nth-child(2) .upload-area');
+                    uploadArea.innerHTML = `
+                        <video src="${e.target.result}" style="max-width: 100%; max-height: 200px; border-radius: 8px;" controls></video>
+                        <div style="margin-top: 10px; color: #10b981;">✅ Video loaded successfully</div>
+                    `;
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Example loading
+        function loadExample(type) {
+            const uploadArea = document.querySelector('.source-panel .upload-area');
+            uploadArea.innerHTML = `
+                <div style="color: #10b981; font-size: 1.2rem;">✅ Example loaded: ${type}</div>
+                <div style="margin-top: 10px; color: #a0a0a0;">Click "Animate" to generate animation</div>
+            `;
+        }
+
+        // Control functions
+        function updateControl(name, value) {
+            controls[name] = parseFloat(value);
+            const input = event.target.parentElement.querySelector('.value-input');
+            input.value = value;
+        }
+
+        function updateSlider(name, value) {
+            controls[name] = parseFloat(value);
+            const slider = event.target.parentElement.querySelector('.slider');
+            slider.value = value;
+        }
+
+        function resetControl(name) {
+            controls[name] = 0;
+            const slider = document.querySelector(`input[oninput*="${name}"]`);
+            const input = slider.parentElement.querySelector('.value-input');
+            slider.value = 0;
+            input.value = 0;
+        }
+
+        // Animation function
+        async function animate() {
+            const outputAreas = document.querySelectorAll('.output-area');
+            
+            // Show loading
+            outputAreas.forEach(area => {
+                area.innerHTML = '<div class="spinner"></div><div style="margin-top: 10px;">Processing...</div>';
+            });
+
+            try {
+                // Send animation request to backend
+                const response = await fetch('/api/animate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        controls: controls
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Show success with results
+                    document.querySelector('.output-area:nth-of-type(1)').innerHTML = 
+                        '<div class="success-badge">Success</div><div style="margin-top: 10px; color: #a0a0a0;">Edited image generated</div>';
+                    document.querySelector('.output-area:nth-of-type(2)').innerHTML = 
+                        '<div class="success-badge">Success</div><div style="margin-top: 10px; color: #a0a0a0;">Animated video generated</div>';
+                } else {
+                    throw new Error(result.error || 'Animation failed');
+                }
+            } catch (error) {
+                console.error('Animation error:', error);
+                outputAreas.forEach(area => {
+                    area.innerHTML = '<div class="error-badge">Error</div><div style="margin-top: 10px; color: #ef4444;">' + error.message + '</div>';
+                });
+            }
+        }
+
+        // Clear function
+        function clearAll() {
+            // Reset upload areas
+            document.querySelectorAll('.upload-area').forEach(area => {
+                if (area.closest('.source-panel')) {
+                    area.innerHTML = `
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Drop Image Here - or - Click to Upload</div>
+                        <div class="upload-actions">
+                            <button class="action-btn">
+                                <span>📤</span> Upload
+                            </button>
+                            <button class="action-btn secondary">
+                                <span>👁️</span> View
+                            </button>
+                            <button class="action-btn secondary">
+                                <span>⊞</span> Gallery
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    area.innerHTML = `
+                        <div class="upload-icon">🎥</div>
+                        <div class="upload-text">Drop Video Here - or - Click to Upload</div>
+                    `;
+                }
+            });
+
+            // Reset output areas
+            document.querySelectorAll('.output-area').forEach(area => {
+                area.innerHTML = '<div class="error-badge">Error</div>';
+            });
+
+            // Reset controls
+            Object.keys(controls).forEach(key => {
+                resetControl(key);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('LIA-X UI initialized');
+        });
+    </script>
+</body>
+</html>
