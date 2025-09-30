@@ -1,0 +1,30 @@
+{
+    "video": {
+        "path": "pyramid_working_research_output/generated_videos/pyramid_mock_1759181432.mp4",
+        "filename": "pyramid_mock_1759181432.mp4",
+        "width": 832,
+        "height": 480,
+        "fps": 8.0,
+        "total_frames": 80,
+        "duration_seconds": 10.0,
+        "file_size_bytes": 212756
+    },
+    "detection": {
+        "label": "fake",
+        "is_fake": true,
+        "confidence": 0.9,
+        "analysis_time_seconds": 2.51,
+        "frames_analyzed": 80,
+        "algorithm": {
+            "name": "simulated_for_research",
+            "version": "v1.0"
+        },
+        "metrics": {
+            "brightness_variation": null,
+            "contrast_variation": null,
+            "edge_density": null
+        },
+        "summary": "Fake video detected (Pyramid Flow synthetic characteristics)"
+    },
+    "timestamp": "2025-09-29 16:30:33"
+}

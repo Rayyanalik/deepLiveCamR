@@ -1,0 +1,4 @@
+filename,label,confidence,analysis_time_seconds,width,height,fps,duration_seconds
+pyramid_mock_1759180740.mp4,fake,0.9,2.5,832,480,8.0,10.0
+pyramid_mock_1759180743.mp4,fake,0.9,2.51,832,480,8.0,10.0
+pyramid_mock_1759180746.mp4,fake,0.9,2.51,832,480,8.0,10.0

@@ -8,7 +8,11 @@ import torch
 import torchvision.transforms as transforms
 from PIL import Image
 from typing import Tuple, List, Optional, Union
-import mediapipe as mp
+# Try to import mediapipe; fall back gracefully if unavailable (e.g., Python 3.13 wheels)
+try:
+    import mediapipe as mp  # type: ignore
+except Exception:
+    mp = None
 from face_recognition import face_locations, face_encodings
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -19,11 +23,16 @@ class FaceDetector:
     def __init__(self, method: str = "mediapipe"):
         self.method = method
         if method == "mediapipe":
+            if mp is None:
+                # Fallback to OpenCV if mediapipe isn't available
+                self.method = "opencv"
+            
+        if self.method == "mediapipe":
             self.mp_face_detection = mp.solutions.face_detection
             self.face_detection = self.mp_face_detection.FaceDetection(
                 model_selection=0, min_detection_confidence=0.5
             )
-        elif method == "opencv":
+        elif self.method == "opencv":
             self.face_cascade = cv2.CascadeClassifier(
                 cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'
             )
