@@ -1,4 +1,7 @@
-# 🎬 AI Deepfake Generation & Detection Research System
+# 🎬 DeepLiveCamR
+
+<img width="1071" height="627" alt="Deeplive" src="https://github.com/user-attachments/assets/4f0e766a-5af3-4d6a-a2aa-2b2332c21494" />
+
 
 **A comprehensive research platform for AI-generated video creation, face swapping, and deepfake detection using state-of-the-art machine learning models.**
 
