@@ -258,6 +258,24 @@
             transform: scale(1.05);
         }
 
+        .example-prompt {
+            background: #2d2d44;
+            border: 1px solid #4a4a6a;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        .example-prompt:hover {
+            background: #374151;
+            border-color: #8b5cf6;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
         /* Output Panels */
         .output-panel {
             position: relative;
@@ -499,14 +517,14 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1 class="title">LIA-X: Interpretable Latent Portrait Animator</h1>
-            <p class="subtitle">Toward Interactive Portrait Animation and Editing</p>
+            <h1 class="title">AI Deepfake Research System</h1>
+            <p class="subtitle">Text-to-Video Generation & Deepfake Detection Platform</p>
             <div class="links">
-                <a href="#" class="link">[Technical Report]</a>
+                <a href="#" class="link">[Research Report]</a>
                 <span>|</span>
-                <a href="#" class="link">[Project Page]</a>
+                <a href="#" class="link">[GitHub Repository]</a>
                 <span>|</span>
-                <a href="#" class="link">[Code]</a>
+                <a href="#" class="link">[Documentation]</a>
             </div>
         </div>
 
@@ -520,32 +538,33 @@
 
         <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <button class="nav-tab active" onclick="switchTab('animation')">Image Animation</button>
-            <button class="nav-tab" onclick="switchTab('editing')">Image Editing</button>
-            <button class="nav-tab" onclick="switchTab('video')">Video Editing</button>
+            <button class="nav-tab active" onclick="switchTab('generation')">Text-to-Video Generation</button>
+            <button class="nav-tab" onclick="switchTab('detection')">Deepfake Detection</button>
+            <button class="nav-tab" onclick="switchTab('analysis')">Video Analysis</button>
         </div>
 
         <!-- Main Content -->
         <div class="main-grid">
-            <!-- Source Image Panel -->
+            <!-- Text Prompt Panel -->
             <div class="panel source-panel">
                 <div class="panel-header">
-                    <span class="panel-title">Source Image</span>
+                    <span class="panel-title">Text Prompt</span>
                     <span class="dropdown-arrow">▼</span>
                 </div>
                 
-                <div class="upload-area" onclick="document.getElementById('source-image').click()">
-                    <div class="upload-icon">📷</div>
-                    <div class="upload-text">Drop Image Here - or - Click to Upload</div>
+                <div class="upload-area" style="padding: 20px;">
+                    <div class="upload-icon">✍️</div>
+                    <div class="upload-text">Enter your text prompt here</div>
+                    <textarea id="text-prompt" placeholder="e.g., a boy playing football on a green field" 
+                              style="width: 100%; height: 100px; margin: 15px 0; padding: 10px; 
+                                     background: #2d2d44; border: 1px solid #4a4a6a; border-radius: 6px; 
+                                     color: #ffffff; resize: vertical; font-family: inherit;"></textarea>
                     <div class="upload-actions">
-                        <button class="action-btn">
-                            <span>📤</span> Upload
+                        <button class="action-btn" onclick="generateVideo()">
+                            <span>🎬</span> Generate Video
                         </button>
-                        <button class="action-btn secondary">
-                            <span>👁️</span> View
-                        </button>
-                        <button class="action-btn secondary">
-                            <span>⊞</span> Gallery
+                        <button class="action-btn secondary" onclick="clearPrompt()">
+                            <span>🗑️</span> Clear
                         </button>
                     </div>
                 </div>
@@ -555,133 +574,134 @@
 
                 <div class="examples">
                     <div class="examples-header">
-                        <span class="examples-title">Examples</span>
+                        <span class="examples-title">Example Prompts</span>
                         <span>☰</span>
                     </div>
-                    <div class="examples-grid">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk1hY3JvbjwvdGV4dD48L3N2Zz4=" alt="Macron" class="example-img" onclick="loadExample('macron')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVpbnN0ZWluPC90ZXh0Pjwvc3ZnPg==" alt="Einstein" class="example-img" onclick="loadExample('einstein')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlN3aWZ0PC90ZXh0Pjwvc3ZnPg==" alt="Swift" class="example-img" onclick="loadExample('swift')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBlcnNvbjwvdGV4dD48L3N2Zz4=" alt="Person" class="example-img" onclick="loadExample('person1')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFzaWFuPC90ZXh0Pjwvc3ZnPg==" alt="Asian" class="example-img" onclick="loadExample('asian')">
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iIzQ0NDQiLz48dGV4dCB4PSI1MCIgeT0iNTAiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxMiIgZmlsbD0iI2ZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPldvbWFuPC90ZXh0Pjwvc3ZnPg==" alt="Woman" class="example-img" onclick="loadExample('woman')">
+                    <div class="examples-grid" style="grid-template-columns: 1fr; gap: 8px;">
+                        <div class="example-prompt" onclick="loadExamplePrompt('football')">⚽ A boy playing football on a green field</div>
+                        <div class="example-prompt" onclick="loadExamplePrompt('cooking')">👩‍🍳 A woman cooking dinner in a modern kitchen</div>
+                        <div class="example-prompt" onclick="loadExamplePrompt('cat')">🐱 A cat playing with a ball of yarn</div>
+                        <div class="example-prompt" onclick="loadExamplePrompt('reading')">📚 A person reading a book in a library</div>
+                        <div class="example-prompt" onclick="loadExamplePrompt('dog')">🐕 A dog running in a park</div>
+                        <div class="example-prompt" onclick="loadExamplePrompt('dancing')">💃 A person dancing in a studio</div>
                     </div>
                 </div>
 
                 <button class="action-btn" style="width: 100%; margin-top: 15px;">Edit</button>
             </div>
 
-            <!-- Driving Video Panel -->
+            <!-- Video Upload Panel -->
             <div class="panel">
                 <div class="panel-header">
-                    <span class="panel-title">Driving Video</span>
+                    <span class="panel-title">Video Upload</span>
                     <span class="dropdown-arrow">▼</span>
                 </div>
-                <div class="upload-area" onclick="document.getElementById('driving-video').click()">
+                <div class="upload-area" onclick="document.getElementById('video-upload').click()">
                     <div class="upload-icon">🎥</div>
-                    <div class="upload-text">Drop Video Here - or - Click to Upload</div>
+                    <div class="upload-text">Upload Video for Detection Analysis</div>
+                    <div class="upload-actions" style="margin-top: 15px;">
+                        <button class="action-btn" onclick="document.getElementById('video-upload').click()">
+                            <span>📤</span> Upload Video
+                        </button>
+                        <button class="action-btn secondary" onclick="startCamera()">
+                            <span>📷</span> Live Camera
+                        </button>
+                    </div>
                 </div>
-                <input type="file" id="driving-video" class="file-input" accept="video/*" onchange="handleDrivingVideo(this)">
+                <input type="file" id="video-upload" class="file-input" accept="video/*" onchange="handleVideoUpload(this)">
             </div>
 
-            <!-- Edited Source Image Panel -->
+            <!-- Generated Video Panel -->
             <div class="panel output-panel">
                 <div class="panel-header">
-                    <span class="panel-title">Edited Source Image</span>
+                    <span class="panel-title">Generated Video</span>
                     <div class="panel-actions">
                         <span class="dropdown-arrow">▼</span>
                         <span class="close-btn">✕</span>
                     </div>
                 </div>
                 <div class="output-area">
-                    <div class="error-badge">Error</div>
+                    <div class="error-badge">No video generated</div>
                 </div>
             </div>
 
-            <!-- Animated Video Panel -->
+            <!-- Detection Results Panel -->
             <div class="panel output-panel">
                 <div class="panel-header">
-                    <span class="panel-title">Animated Video</span>
+                    <span class="panel-title">Detection Results</span>
                     <div class="panel-actions">
                         <span class="dropdown-arrow">▼</span>
                         <span class="close-btn">✕</span>
                     </div>
                 </div>
                 <div class="output-area">
-                    <div class="error-badge">Error</div>
+                    <div class="error-badge">No analysis performed</div>
                 </div>
             </div>
         </div>
 
-        <!-- Control Panel -->
+        <!-- AI Settings Panel -->
         <div class="panel control-panel">
             <div class="panel-header">
-                <span class="panel-title">Control Panel</span>
+                <span class="panel-title">AI Settings</span>
                 <span class="dropdown-arrow">▼</span>
             </div>
             
             <div class="control-tabs">
-                <button class="control-tab active" onclick="switchControlTab('head')">Head</button>
-                <button class="control-tab" onclick="switchControlTab('mouth')">Mouth</button>
-                <button class="control-tab" onclick="switchControlTab('eyes')">Eyes</button>
+                <button class="control-tab active" onclick="switchControlTab('generation')">Generation</button>
+                <button class="control-tab" onclick="switchControlTab('detection')">Detection</button>
+                <button class="control-tab" onclick="switchControlTab('analysis')">Analysis</button>
             </div>
 
             <div class="controls-grid">
                 <div class="control-group">
                     <div class="control-item">
-                        <span class="control-label">yaw1</span>
-                        <div class="slider-container">
-                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('yaw1', this.value)">
-                        </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('yaw1', this.value)">
-                        <button class="reset-btn" onclick="resetControl('yaw1')">↺</button>
+                        <span class="control-label">Model</span>
+                        <select class="value-input" style="width: 120px;" onchange="updateModel(this.value)">
+                            <option value="huggingface">Hugging Face</option>
+                            <option value="heygen">HeyGen</option>
+                            <option value="runway">Runway ML</option>
+                        </select>
                     </div>
 
                     <div class="control-item">
-                        <span class="control-label">yaw2</span>
+                        <span class="control-label">Quality</span>
                         <div class="slider-container">
-                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('yaw2', this.value)">
+                            <input type="range" class="slider" min="1" max="5" value="3" step="1" oninput="updateControl('quality', this.value)">
                         </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('yaw2', this.value)">
-                        <button class="reset-btn" onclick="resetControl('yaw2')">↺</button>
+                        <input type="number" class="value-input" value="3" min="1" max="5" onchange="updateSlider('quality', this.value)">
                     </div>
 
                     <div class="control-item">
-                        <span class="control-label">pitch</span>
+                        <span class="control-label">Duration</span>
                         <div class="slider-container">
-                            <input type="range" class="slider" min="-1" max="0.5" value="0" step="0.1" oninput="updateControl('pitch', this.value)">
+                            <input type="range" class="slider" min="3" max="10" value="5" step="1" oninput="updateControl('duration', this.value)">
                         </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('pitch', this.value)">
-                        <button class="reset-btn" onclick="resetControl('pitch')">↺</button>
+                        <input type="number" class="value-input" value="5" min="3" max="10" onchange="updateSlider('duration', this.value)">
                     </div>
                 </div>
 
                 <div class="control-group">
                     <div class="control-item">
-                        <span class="control-label">roll1</span>
-                        <div class="slider-container">
-                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('roll1', this.value)">
-                        </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('roll1', this.value)">
-                        <button class="reset-btn" onclick="resetControl('roll1')">↺</button>
+                        <span class="control-label">Detection</span>
+                        <select class="value-input" style="width: 120px;" onchange="updateDetection(this.value)">
+                            <option value="cnn">CNN Model</option>
+                            <option value="transformer">Transformer</option>
+                            <option value="ensemble">Ensemble</option>
+                        </select>
                     </div>
 
                     <div class="control-item">
-                        <span class="control-label">roll2</span>
+                        <span class="control-label">Confidence</span>
                         <div class="slider-container">
-                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('roll2', this.value)">
+                            <input type="range" class="slider" min="0.1" max="1.0" value="0.8" step="0.1" oninput="updateControl('confidence', this.value)">
                         </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('roll2', this.value)">
-                        <button class="reset-btn" onclick="resetControl('roll2')">↺</button>
+                        <input type="number" class="value-input" value="0.8" step="0.1" onchange="updateSlider('confidence', this.value)">
                     </div>
 
                     <div class="control-item">
-                        <span class="control-label">neck</span>
-                        <div class="slider-container">
-                            <input type="range" class="slider" min="-0.5" max="0.5" value="0" step="0.1" oninput="updateControl('neck', this.value)">
-                        </div>
-                        <input type="number" class="value-input" value="0" step="0.1" onchange="updateSlider('neck', this.value)">
-                        <button class="reset-btn" onclick="resetControl('neck')">↺</button>
+                        <span class="control-label">Real-time</span>
+                        <input type="checkbox" style="transform: scale(1.5);" onchange="updateRealtime(this.checked)">
                     </div>
                 </div>
             </div>
@@ -689,18 +709,19 @@
 
         <!-- Action Buttons -->
         <div class="action-buttons">
-            <button class="btn btn-secondary" onclick="clearAll()">Clear</button>
-            <button class="btn btn-primary" onclick="animate()">Animate</button>
+            <button class="btn btn-secondary" onclick="clearAll()">Clear All</button>
+            <button class="btn btn-primary" onclick="generateVideo()">Generate Video</button>
+            <button class="btn btn-primary" onclick="detectDeepfake()">Detect Deepfake</button>
         </div>
     </div>
 
     <script>
         // Global state
-        let currentTab = 'animation';
-        let currentControlTab = 'head';
+        let currentTab = 'generation';
+        let currentControlTab = 'generation';
         let controls = {
-            yaw1: 0, yaw2: 0, pitch: 0,
-            roll1: 0, roll2: 0, neck: 0
+            quality: 3, duration: 5, confidence: 0.8,
+            model: 'huggingface', detection: 'cnn', realtime: false
         };
 
         // Tab switching
@@ -710,18 +731,18 @@
             event.target.classList.add('active');
             
             // Update UI based on tab
-            if (tab === 'animation') {
-                document.querySelector('.source-panel .panel-title').textContent = 'Source Image';
-                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '📷';
-                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Image Here - or - Click to Upload';
-            } else if (tab === 'editing') {
-                document.querySelector('.source-panel .panel-title').textContent = 'Source Image';
-                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '📷';
-                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Image Here - or - Click to Upload';
-            } else if (tab === 'video') {
-                document.querySelector('.source-panel .panel-title').textContent = 'Source Video';
+            if (tab === 'generation') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Text Prompt';
+                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '✍️';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Enter your text prompt here';
+            } else if (tab === 'detection') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Video Upload';
                 document.querySelector('.source-panel .upload-area .upload-icon').textContent = '🎥';
-                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Drop Video Here - or - Click to Upload';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Upload Video for Detection Analysis';
+            } else if (tab === 'analysis') {
+                document.querySelector('.source-panel .panel-title').textContent = 'Analysis Input';
+                document.querySelector('.source-panel .upload-area .upload-icon').textContent = '📊';
+                document.querySelector('.source-panel .upload-area .upload-text').textContent = 'Upload files for analysis';
             }
         }
 
@@ -790,13 +811,125 @@
             }
         }
 
-        // Example loading
-        function loadExample(type) {
-            const uploadArea = document.querySelector('.source-panel .upload-area');
-            uploadArea.innerHTML = `
-                <div style="color: #10b981; font-size: 1.2rem;">✅ Example loaded: ${type}</div>
-                <div style="margin-top: 10px; color: #a0a0a0;">Click "Animate" to generate animation</div>
-            `;
+        // Example prompt loading
+        function loadExamplePrompt(type) {
+            const prompts = {
+                'football': 'A boy playing football on a green field',
+                'cooking': 'A woman cooking dinner in a modern kitchen',
+                'cat': 'A cat playing with a ball of yarn',
+                'reading': 'A person reading a book in a library',
+                'dog': 'A dog running in a park',
+                'dancing': 'A person dancing in a studio'
+            };
+            
+            const textarea = document.getElementById('text-prompt');
+            textarea.value = prompts[type];
+            textarea.style.borderColor = '#8b5cf6';
+            
+            setTimeout(() => {
+                textarea.style.borderColor = '#4a4a6a';
+            }, 1000);
+        }
+
+        // Generate video function
+        async function generateVideo() {
+            const prompt = document.getElementById('text-prompt').value;
+            if (!prompt.trim()) {
+                alert('Please enter a text prompt');
+                return;
+            }
+
+            const outputArea = document.querySelector('.output-area:nth-of-type(1)');
+            outputArea.innerHTML = '<div class="spinner"></div><div style="margin-top: 10px;">Generating video...</div>';
+
+            try {
+                const response = await fetch('/api/generate_text_to_video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    outputArea.innerHTML = `
+                        <div class="success-badge">Success</div>
+                        <div style="margin-top: 10px; color: #a0a0a0;">Video generated successfully</div>
+                        <div style="margin-top: 5px; color: #8b5cf6;">Model: ${controls.model}</div>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Video generation failed');
+                }
+            } catch (error) {
+                outputArea.innerHTML = `
+                    <div class="error-badge">Error</div>
+                    <div style="margin-top: 10px; color: #ef4444;">${error.message}</div>
+                `;
+            }
+        }
+
+        // Detect deepfake function
+        async function detectDeepfake() {
+            const outputArea = document.querySelector('.output-area:nth-of-type(2)');
+            outputArea.innerHTML = '<div class="spinner"></div><div style="margin-top: 10px;">Analyzing video...</div>';
+
+            try {
+                // Simulate detection analysis
+                setTimeout(() => {
+                    const isFake = Math.random() > 0.5;
+                    const confidence = (Math.random() * 0.3 + 0.7).toFixed(2);
+                    
+                    outputArea.innerHTML = `
+                        <div class="${isFake ? 'error-badge' : 'success-badge'}">${isFake ? 'Deepfake Detected' : 'Real Video'}</div>
+                        <div style="margin-top: 10px; color: #a0a0a0;">Confidence: ${confidence}</div>
+                        <div style="margin-top: 5px; color: #8b5cf6;">Model: ${controls.detection}</div>
+                    `;
+                }, 2000);
+            } catch (error) {
+                outputArea.innerHTML = `
+                    <div class="error-badge">Error</div>
+                    <div style="margin-top: 10px; color: #ef4444;">${error.message}</div>
+                `;
+            }
+        }
+
+        // Clear prompt function
+        function clearPrompt() {
+            document.getElementById('text-prompt').value = '';
+        }
+
+        // Start camera function
+        function startCamera() {
+            alert('Camera functionality would be implemented here for live detection');
+        }
+
+        // Video upload handler
+        function handleVideoUpload(input) {
+            if (input.files && input.files[0]) {
+                const uploadArea = document.querySelector('.panel:nth-child(2) .upload-area');
+                uploadArea.innerHTML = `
+                    <video src="${URL.createObjectURL(input.files[0])}" style="max-width: 100%; max-height: 200px; border-radius: 8px;" controls></video>
+                    <div style="margin-top: 10px; color: #10b981;">✅ Video uploaded successfully</div>
+                `;
+            }
+        }
+
+        // Update model function
+        function updateModel(value) {
+            controls.model = value;
+            console.log('Model updated:', value);
+        }
+
+        // Update detection function
+        function updateDetection(value) {
+            controls.detection = value;
+            console.log('Detection model updated:', value);
+        }
+
+        // Update realtime function
+        function updateRealtime(checked) {
+            controls.realtime = checked;
+            console.log('Real-time detection:', checked);
         }
 
         // Control functions
