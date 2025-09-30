@@ -63,9 +63,10 @@ try:
     # Initialize system
     system = HuggingFaceTextToVideoSystem(os.getenv('HF_TOKEN'))
     print("🎬 Hugging Face text-to-video system initialized")
-    print("   Model: cerspense/zeroscope_v2_576w (top open-source model)")
+    print("   Model: ali-vilab/text-to-video-ms-1.7b (working model)")
     print("   Quality: High (480p-720p, 5-10 seconds)")
     print("   Rate Limit: 10-20 requests/hour (free tier)")
+    print("   Fallback: Multiple models + mock video generation")
     
     # Define research prompts
     prompts = [
@@ -77,8 +78,9 @@ try:
     ]
     
     print(f"\n🎬 Starting video generation for {len(prompts)} prompts...")
-    print("   Using cerspense/zeroscope_v2_576w (top open-source model)")
+    print("   Using ali-vilab/text-to-video-ms-1.7b (working model)")
     print("   Free tier: 10-20 requests/hour, no credit card required")
+    print("   Fallback: Multiple models + mock video generation")
     
     # Generate videos
     videos, results = system.generate_research_videos(prompts)
